@@ -1,0 +1,11 @@
+# Logos directives (%hook, %orig, %c(...), %ctor) aren't Objective-C, so hide the
+# parse errors they cause in Logos files. compile_commands.json (from
+# `make commands`) supplies the SDK, headers and flags.
+If:
+  PathMatch: .*\.(x|xm|xi|xmi)
+Diagnostics:
+  Suppress:
+    - expected_expression
+    - expected_either
+    - unexpected_interface
+    - -Wimplicit-function-declaration

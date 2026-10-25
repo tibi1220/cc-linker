@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCLinker</title>
+  <style>
+    :root { --bg: #f6f6f8; --card: #fff; --text: #16161a; --muted: #6b6b76; --border: #e2e2e8; --accent: #5b5bd6; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #111114; --card: #1c1c21; --text: #ececf1; --muted: #9a9aa6; --border: #2c2c33; --accent: #8b8bf0; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 640px; margin: 0 auto; padding: 32px 16px; }
+    header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    header img { width: 64px; height: 64px; border-radius: 14px; }
+    h1 { font-size: 24px; margin: 0; }
+    .muted { color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px 16px; margin-bottom: 16px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .row:last-child { border-bottom: 0; }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icon.png" alt="">
+      <div>
+        <h1>CCLinker</h1>
+        <div class="muted">Swipe a Control Center module to jump to its settings.</div>
+      </div>
+    </header>
+
+    <div class="card">
+      <p><strong>Wi-Fi, Bluetooth, Cellular, Hotspot, AirDrop and VPN</strong> open their Settings page.</p>
+      <p><strong>Focus and Low Power Mode</strong> open their Settings page.</p>
+      <p><strong>The music widget</strong> opens the app that is playing, or an app of your choice.</p>
+      <p>Pick the gesture and turn individual links on or off in Settings → CCLinker. Changes apply without a respring.</p>
+    </div>
+
+    <div class="card">
+      <div class="row"><span>Developer</span><span class="muted">tibi1220</span></div>
+      <div class="row"><span>Compatibility</span><span class="muted">iOS 14 – 17</span></div>
+      <div class="row"><span>Schemes</span><span class="muted">Rootful, rootless, roothide</span></div>
+      <div class="row"><span>Source</span><a href="https://github.com/tibi1220/cc-linker">GitHub</a></div>
+    </div>
+  </main>
+</body>
+</html>
