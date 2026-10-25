@@ -47,7 +47,7 @@ jobs:
           THEOS="$RUNNER_TEMP/theos-roothide" gmake clean package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide
           ls -l packages
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: packages
           path: packages/*.deb
@@ -60,7 +60,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: packages
           path: packages
