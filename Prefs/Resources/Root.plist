@@ -8,7 +8,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Changes apply immediately, no respring needed.</string>
+			<string>With Hold, holding a linked module opens its link instead of expanding it. To expand, hold a module without a link, or the space between the connectivity buttons. Changes apply immediately, no respring needed.</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -45,6 +45,7 @@
 				<string>Swipe Left</string>
 				<string>Swipe Up</string>
 				<string>Swipe Down</string>
+				<string>Hold</string>
 			</array>
 			<key>validValues</key>
 			<array>
@@ -52,6 +53,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
+				<integer>4</integer>
 			</array>
 		</dict>
 		<dict>

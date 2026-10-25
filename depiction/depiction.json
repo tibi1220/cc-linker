@@ -9,12 +9,26 @@
       "views": [
         {
           "class": "DepictionMarkdownView",
-          "markdown": "Swipe a Control Center module to jump straight to its settings.\n\n- **Wi-Fi, Bluetooth, Cellular, Hotspot, AirDrop, VPN** open their Settings page\n- **Focus, Low Power Mode** open their Settings page\n- **Music widget** opens the app that is playing, or an app of your choice\n\nPick the gesture (swipe right, left, up or down) and turn individual links on or off in Settings → CCLinker. Changes apply without a respring."
+          "markdown": "Swipe a Control Center module to jump straight to its settings.\n\n- **Wi-Fi, Bluetooth, Cellular, Hotspot, AirDrop, VPN** open their Settings page\n- **Focus, Low Power Mode** open their Settings page\n- **Music widget** opens the app that is playing, or an app of your choice\n\nPick the gesture (swipe right, left, up or down, or hold) and turn individual links on or off in Settings → CCLinker. Changes apply without a respring."
         },
-        { "class": "DepictionSeparatorView" },
-        { "class": "DepictionTableTextView", "title": "Developer", "text": "tibi1220" },
-        { "class": "DepictionTableTextView", "title": "Compatibility", "text": "iOS 14 – 17" },
-        { "class": "DepictionTableTextView", "title": "Schemes", "text": "Rootful, rootless, roothide" },
+        {
+          "class": "DepictionSeparatorView"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "Developer",
+          "text": "tibi1220"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "Compatibility",
+          "text": "iOS 14 – 17"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "Schemes",
+          "text": "Rootful, rootless, roothide"
+        },
         {
           "class": "DepictionTableButtonView",
           "title": "Source Code",
@@ -27,8 +41,24 @@
       "tabname": "Changelog",
       "class": "DepictionStackView",
       "views": [
-        { "class": "DepictionSubheaderView", "title": "1.0.0", "useBoldText": true },
-        { "class": "DepictionMarkdownView", "markdown": "Initial release." }
+        {
+          "class": "DepictionSubheaderView",
+          "title": "1.1.0",
+          "useBoldText": true
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "markdown": "- Hold is now available as a gesture. Holding a linked module opens its link; holding anything else still expands it."
+        },
+        {
+          "class": "DepictionSubheaderView",
+          "title": "1.0.0",
+          "useBoldText": true
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "markdown": "Initial release."
+        }
       ]
     }
   ]

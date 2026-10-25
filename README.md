@@ -8,19 +8,22 @@ Swipe a Control Center module to jump straight to its settings.
 | Focus, Low Power Mode | Their page in Settings |
 | Music widget | The now playing app (falls back to Music), or a chosen app |
 
-Settings → CCLinker lets you pick the gesture (swipe right, left, up or down), toggle haptics,
+Settings → CCLinker lets you pick the gesture (swipe right, left, up or down, or hold), toggle haptics,
 turn individual links on or off, and choose the music app from a searchable list. Changes apply
 without a respring.
 
 Links also work in the expanded connectivity module, which is where AirDrop and Personal Hotspot
-live. Other modules ignore swipes while expanded.
+live. Other modules ignore the gesture while expanded.
+
+With Hold, holding a linked module opens its link instead of expanding it. Holding a module
+without a link, or the space between the connectivity buttons, still expands it.
 
 Available from [tibi1220's Repo](https://tibi1220.github.io/repo/) for rootful, rootless and roothide.
 
 ## How it works
 
-- Hooks `CCUIContentModuleContainerViewController -viewDidLoad` in SpringBoard to add a swipe
-  recognizer to every module.
+- Hooks `CCUIContentModuleContainerViewController -viewDidLoad` in SpringBoard to add a swipe and a
+  hold recognizer to every module, enabling whichever gesture is selected.
 - Identifies the module by its `moduleIdentifier`. Inside the connectivity module, it walks up
   the responder chain from the touched view to find the button's view controller
   (`CCUIConnectivityWifiViewController`, …).

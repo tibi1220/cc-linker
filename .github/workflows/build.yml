@@ -70,13 +70,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" packages/*.deb -R "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
 
-      # Without the token the repo still picks the release up on its nightly build
+      # Needs a fine-grained token with Contents: read and write on
+      # tibi1220/repo. The release is already published if this fails; the
+      # repo then picks it up on its nightly build.
       - name: Rebuild repo
         env:
           GH_TOKEN: ${{ secrets.REPO_DISPATCH_TOKEN }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
-            echo "REPO_DISPATCH_TOKEN not set, skipping"
-            exit 0
+            echo "::error::REPO_DISPATCH_TOKEN secret is missing or empty"
+            exit 1
           fi
           gh api repos/tibi1220/repo/dispatches -f event_type=new-release

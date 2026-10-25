@@ -24,13 +24,20 @@ typedef NS_ENUM(NSInteger, CCLGesture) {
   CCLGestureSwipeLeft,
   CCLGestureSwipeUp,
   CCLGestureSwipeDown,
+  CCLGestureHold,
 };
+
+// Shorter than Control Center's own press-and-hold, which it beats to the touch
+static const NSTimeInterval kHoldDuration = 0.35;
 
 static NSUserDefaults *prefs;
 static BOOL enabled;
 static BOOL haptics;
+static BOOL hold;
 static UISwipeGestureRecognizerDirection direction;
-static NSHashTable<UISwipeGestureRecognizer *> *recognizers;
+// Every module has a swipe and a hold recognizer; only the chosen one is
+// enabled
+static NSHashTable<UIGestureRecognizer *> *recognizers;
 
 // The view the current Control Center touch landed on, used to tell the
 // connectivity module's buttons apart
@@ -74,9 +81,16 @@ directionForGesture(CCLGesture gesture) {
 static void loadPrefs(void) {
   enabled = [prefs boolForKey:@"enabled"];
   haptics = [prefs boolForKey:@"haptics"];
-  direction = directionForGesture([prefs integerForKey:@"gesture"]);
-  for (UISwipeGestureRecognizer *recognizer in recognizers) {
-    recognizer.direction = direction;
+  CCLGesture gesture = [prefs integerForKey:@"gesture"];
+  hold = gesture == CCLGestureHold;
+  direction = directionForGesture(gesture);
+  for (UIGestureRecognizer *recognizer in recognizers) {
+    if ([recognizer isKindOfClass:UISwipeGestureRecognizer.class]) {
+      ((UISwipeGestureRecognizer *)recognizer).direction = direction;
+      recognizer.enabled = !hold;
+    } else {
+      recognizer.enabled = hold;
+    }
   }
 }
 
@@ -188,7 +202,23 @@ static void openLink(NSString *link) {
   return enabled;
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UISwipeGestureRecognizer *)recognizer {
+// Control Center expands a module when it's held, so while holding is the
+// gesture its press recognizers wait for ours. Ours fails (in
+// gestureRecognizerShouldBegin:) on anything without a link, which then
+// expands as usual.
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)recognizer
+    shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)other {
+  if (![recognizer isKindOfClass:UILongPressGestureRecognizer.class])
+    return NO;
+  if (![other.view isDescendantOfView:recognizer.view])
+    return NO;
+  NSString *name = NSStringFromClass(other.class);
+  return [other isKindOfClass:UILongPressGestureRecognizer.class] ||
+         [name containsString:@"Press"] || [name containsString:@"Hold"] ||
+         [name containsString:@"Force"];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)recognizer {
   pendingLink = nil;
   if (!enabled)
     return NO;
@@ -223,8 +253,13 @@ static void openLink(NSString *link) {
   return YES;
 }
 
-- (void)handleSwipe:(UISwipeGestureRecognizer *)recognizer {
-  if (recognizer.state != UIGestureRecognizerStateRecognized || !pendingLink)
+- (void)handleGesture:(UIGestureRecognizer *)recognizer {
+  // A hold fires as soon as it's recognized, a swipe once it's finished
+  UIGestureRecognizerState fireState =
+      [recognizer isKindOfClass:UILongPressGestureRecognizer.class]
+          ? UIGestureRecognizerStateBegan
+          : UIGestureRecognizerStateRecognized;
+  if (recognizer.state != fireState || !pendingLink)
     return;
   if (haptics) {
     [[[UIImpactFeedbackGenerator alloc]
@@ -271,11 +306,20 @@ static void setUp(void) {
 - (void)viewDidLoad {
   %orig;
   CCLGestureHandler *handler = [CCLGestureHandler sharedInstance];
-  UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:handler action:@selector(handleSwipe:)];
+
+  UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:handler action:@selector(handleGesture:)];
   swipe.direction = direction;
+  swipe.enabled = !hold;
   swipe.delegate = handler;
   [self.view addGestureRecognizer:swipe];
   [recognizers addObject:swipe];
+
+  UILongPressGestureRecognizer *press = [[UILongPressGestureRecognizer alloc] initWithTarget:handler action:@selector(handleGesture:)];
+  press.minimumPressDuration = kHoldDuration;
+  press.enabled = hold;
+  press.delegate = handler;
+  [self.view addGestureRecognizer:press];
+  [recognizers addObject:press];
 }
 
 %end

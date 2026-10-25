@@ -1,6 +1,6 @@
 Package: com.tibi1220.cclinker
 Name: CCLinker
-Version: 1.0.0
+Version: 1.1.0
 Architecture: iphoneos-arm
 Description: Swipe a Control Center module to jump straight to its settings or app.
 Maintainer: tibi1220
