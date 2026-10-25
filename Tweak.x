@@ -5,6 +5,7 @@
 #import <SpringBoard/SBControlCenterController.h>
 #import <SpringBoard/SBMediaController.h>
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 
 #define kPrefsDomain @"com.tibi1220.cclinker"
 #define kPrefsChangedNotification "com.tibi1220.cclinker/ReloadPrefs"
@@ -130,8 +131,8 @@ static NSString *musicAppBundleID(void) {
   NSString *app = [prefs stringForKey:@"musicApp"];
   if (app.length && ![app isEqualToString:@"nowplaying"])
     return app;
-  SBApplication *nowPlaying =
-      [[% c(SBMediaController) sharedInstance] nowPlayingApplication];
+  SBApplication *nowPlaying = [[objc_getClass("SBMediaController")
+      sharedInstance] nowPlayingApplication];
   return nowPlaying.bundleIdentifier ?: @"com.apple.Music";
 }
 
@@ -147,8 +148,8 @@ static void openLink(NSString *link) {
       return;
   }
 
-  [[% c(SBControlCenterController) sharedInstance] dismissAnimated:YES
-                                                        completion:nil];
+  [[objc_getClass("SBControlCenterController")
+      sharedInstance] dismissAnimated:YES completion:nil];
 
   // Unlocks (prompting for the passcode) when invoked from the lock screen
   NSDictionary *options = @{FBSOpenApplicationOptionKeyUnlockDevice : @YES};
@@ -195,7 +196,9 @@ static void openLink(NSString *link) {
   // A module's root view's next responder is its container view controller
   CCUIContentModuleContainerViewController *container =
       (id)recognizer.view.nextResponder;
-  if (![container isKindOfClass: % c(CCUIContentModuleContainerViewController)])
+  if (![container
+          isKindOfClass:objc_getClass(
+                            "CCUIContentModuleContainerViewController")])
     return NO;
 
   // Expanded modules have scrubbers and lists the swipe would fight with,
@@ -233,23 +236,7 @@ static void openLink(NSString *link) {
 
 @end
 
-% hook CCUIContentModuleContainerViewController
-
-    - (void)viewDidLoad {
-  % orig;
-  CCLGestureHandler *handler = [CCLGestureHandler sharedInstance];
-  UISwipeGestureRecognizer *swipe =
-      [[UISwipeGestureRecognizer alloc] initWithTarget:handler
-                                                action:@selector(handleSwipe:)];
-  swipe.direction = direction;
-  swipe.delegate = handler;
-  [self.view addGestureRecognizer:swipe];
-  [recognizers addObject:swipe];
-}
-
-% end
-
-    % ctor {
+static void setUp(void) {
   prefs = [[NSUserDefaults alloc] initWithSuiteName:kPrefsDomain];
   [prefs registerDefaults:@{
     @"enabled" : @YES,
@@ -273,6 +260,29 @@ static void openLink(NSString *link) {
                                   NULL, prefsChanged,
                                   CFSTR(kPrefsChangedNotification), NULL,
                                   CFNotificationSuspensionBehaviorCoalesce);
-
-  % init;
 }
+
+// Logos directives aren't C, and clang-format splits them ("% hook"), so it
+// stays out of this section. Use objc_getClass() instead of %c() above.
+// clang-format off
+
+%hook CCUIContentModuleContainerViewController
+
+- (void)viewDidLoad {
+  %orig;
+  CCLGestureHandler *handler = [CCLGestureHandler sharedInstance];
+  UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:handler action:@selector(handleSwipe:)];
+  swipe.direction = direction;
+  swipe.delegate = handler;
+  [self.view addGestureRecognizer:swipe];
+  [recognizers addObject:swipe];
+}
+
+%end
+
+%ctor {
+  setUp();
+  %init;
+}
+
+// clang-format on

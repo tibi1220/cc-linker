@@ -48,5 +48,6 @@ On macOS, use `gmake`: Theos needs GNU Make 4+.
 1. Bump `Version` in `control`, and add the changelog to `depiction/depiction.json`.
 2. Tag and push: `git tag v1.0.1 && git push --tags`.
 
-The release workflow builds all three schemes, attaches the debs to a GitHub release, and
-triggers a rebuild of the repo if the `REPO_DISPATCH_TOKEN` secret is set.
+The build workflow compiles all three schemes on every push and pull request. For a tag, it also
+attaches the debs to a GitHub release, and triggers a rebuild of the repo if the
+`REPO_DISPATCH_TOKEN` secret is set.
